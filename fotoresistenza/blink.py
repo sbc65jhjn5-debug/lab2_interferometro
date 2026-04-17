@@ -11,7 +11,7 @@ try:
         valore = 65535 - sensore.read_u16() # legge il valore del sensore
         data.append(valore)
         print(valore)
-        sleep_ms(10) # "dorme" per 10 ms
+        sleep_ms(1) # "dorme" per 1 ms
 
 except KeyboardInterrupt:
     with open("data.txt", "w") as f:
