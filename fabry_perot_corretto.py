@@ -2,6 +2,7 @@ import numpy as np
 from iminuit import Minuit
 from iminuit.cost import LeastSquares
 import matplotlib.pyplot as plt
+from scipy.stats import chi2
 
 
 def theta_n (r, L):
@@ -52,8 +53,8 @@ if __name__ == "__main__":
                  label='Dati con errori'
                  )
     
-    ax.set_xlabel('Numero progressivo della frangia (p)')
-    ax.set_ylabel('cos(theta)')
+    ax.set_xlabel('Numero progressivo della frangia $p$')
+    ax.set_ylabel('$\\cos (\\theta)$')
     ax.set_title('Interferenza di Fabry-Perot')
 
 
@@ -81,12 +82,19 @@ if __name__ == "__main__":
     a_fit = m.values["a"]
     d_fit = m.values["d"]
 
+    # Chi quadro
+    chi2_val = m.fval
+    p_value = chi2.sf (chi2_val, m.ndof)
+    print (f"Chi quadro: {chi2_val:.2f},\ngradi di libertà: {m.ndof},\np-value: {p_value:.3f}")
+
+    # Grafico del fit sopra i punti
+
     ax.plot (p, [cos_theta_n (p_i, a_fit, m.values["lamb"], d_fit) for p_i in p],
-             label='Fit',
+             label=f'$y = {a_fit:.5f} - (\\lambda  / (2 * {d_fit:.5f})) \\; x$',
              color='crimson'
     )
 
-    print (f"d = {d_fit * 1e3:.3f} ± {m.errors['d'] * 1e3:.3f} mm")
+    print (f"d = {d_fit * 1e3:.5f} ± {m.errors['d'] * 1e3:.5f} mm")
 
     ax.legend()
     plt.show()
