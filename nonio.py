@@ -20,6 +20,6 @@ if __name__ == "__main__":
 
     lamb = 632.8e-9
 
-    Delta_d = delta_d(delta_N, lamb)
+    Delta_d = delta_d (delta_N, lamb)
     sigma_Delta_d = delta_d_sigma (lamb, delta_N_sigma)
     print (f"Delta d = {Delta_d*1e6:.3f} ± {sigma_Delta_d*1e6:.3f} micrometri")
