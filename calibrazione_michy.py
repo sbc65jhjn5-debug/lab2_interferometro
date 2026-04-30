@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 def delta_d (delta_N, lamb):
 
@@ -15,12 +13,12 @@ def delta_d_sigma (lamb, sigma_delta_N):
 
 if __name__ == "__main__":
 
-    delta_N = 51.38
-    delta_N_sigma = 1.03
+    delta_N = 52.44
+    sigma_delta_N = 1.09
 
     lamb = 632.8e-9
 
     Delta_d = delta_d (delta_N, lamb)
-    sigma_Delta_d = delta_d_sigma (lamb, delta_N_sigma)
+    sigma_Delta_d = delta_d_sigma (lamb, sigma_delta_N)
     print (f"Delta d = {Delta_d*1e6:.3f} ± {sigma_Delta_d*1e6:.3f} micrometri")
     print (f"Fattore di correzione k = {20.0/(Delta_d*1e6):.4f}")
