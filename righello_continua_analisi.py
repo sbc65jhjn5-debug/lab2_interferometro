@@ -39,11 +39,9 @@ if __name__ == "__main__":
 
     y_scala = np.linspace (SPAZIO_INIZIO_CM - zero, SPAZIO_FINE_CM - zero, num=len(int_data))
 
-    # Istogramma dei dati dell'intensità
-    # --> binned likelihood poi
 
     # Io farei I in funzione di z (non delta, tanto sono imparentati),
-    # sia per istogramma sia per grafico
+    # sia per funzione teo sia dati nostri
 
     # Plot di funzione teorica (scritta su tablet)
     # stimiamo (grazie a simulazione fatta su claude) che il rapporto a/d sia circa 0.18
