@@ -9,7 +9,7 @@ DELTA_T = 22.4
 SPAZIO_INIZIO_CM = 6.0
 SPAZIO_FINE_CM = 14.0
 
-def delta (theta, lamb = 632.8e-9, d):
+def delta (theta, d, lamb = 632.8e-9):
     # theta è angolo di osservazione
     return (2 * np.pi / lamb) * d * np.sin (theta)
 
@@ -18,8 +18,8 @@ def z (theta, lamb = 632.8e-9, a = 0.0001):
     # a è la larghezza della singola fenditura
     return (np.pi * a / lamb) * np.sin (theta)
 
-def I_teorica (delta, N, z):
-    return I_0 * (np.sin (N * delta / 2) / (N * np.sin (delta / 2)))**2 * (np.sin (z) / z)**2
+def I_teorica (I_0, delta, N, z):
+    return I_0 * (np.sin (N * delta / 2) / (np.sin (delta / 2)))**2 * (np.sin (z) / z)**2
     # al denominatore del primo fattore è dubbio se ci sia o no N (in appunti c'è ma a voce non c'era...)
 
 
@@ -32,3 +32,11 @@ if __name__ == "__main__":
     v_media = delta_s / DELTA_T
     print(f"Velocita media: {v_media:.4f} cm/s")
 
+    # Istogramma dei dati dell'intensità
+    # --> binned likelihood poi
+
+    # Io farei I in funzione di z (non delta, tanto sono imparentati),
+    # sia per istogramma sia per grafico
+
+    # Plot di funzione teorica (scritta su tablet)
+    # stimiamo (grazie a simulazione fatta su claude) che il rapporto a/d sia circa 0.18
