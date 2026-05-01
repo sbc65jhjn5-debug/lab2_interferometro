@@ -26,11 +26,18 @@ def I_teorica (I_0, delta, N, z):
 if __name__ == "__main__":
 
     data = pd.read_csv("run_continua.txt")
-    y_data = data.iloc[:, 0].to_numpy(dtype=float)
+    int_data = data.iloc[:, 0].to_numpy(dtype=float)
 
     delta_s = SPAZIO_FINE_CM - SPAZIO_INIZIO_CM
     v_media = delta_s / DELTA_T
     print(f"Velocita media: {v_media:.4f} cm/s")
+
+    # scaliamo la scala delle y (verticale) in modo da avere lo zero 
+    # in corrispondenza dell'orizzontale del tavolo:
+
+    zero = 0.0525 # valore ottenuto da "righello_mano"
+
+    y_scala = np.linspace (SPAZIO_INIZIO_CM - zero, SPAZIO_FINE_CM - zero, num=len(int_data))
 
     # Istogramma dei dati dell'intensità
     # --> binned likelihood poi
