@@ -7,6 +7,15 @@ def lamb (distanza, passo, n, l, zero):
         lam = passo * (np.sin(np.arctan(distanza / zero)) - np.sin (np.arctan(distanza / l))) / n
         return lam
     
+def lambda_2 (distanza, passo, n, l, zero):
+
+    if n == 0:
+        return 0
+    else:
+        lam = passo * (np.cos (np.arctan(zero/distanza)) - np.cos (np.arctan (l/distanza))) / n
+        return lam
+
+    
 def sigma_lambda (distanza, passo, n, l, sigma_l, zero, sigma_zero, sigma_distanza):
 
     if n == 0:
@@ -24,6 +33,24 @@ def sigma_lambda (distanza, passo, n, l, sigma_l, zero, sigma_zero, sigma_distan
         # Calcolo dell'errore quadratico medio
         sigma_lam = np.sqrt((partial_distanza * sigma_distanza)**2 + (partial_l * sigma_l)**2 + (partial_zero * sigma_zero)**2)
         return sigma_lam
+    
+def sigma_lambda_2 (distanza, sigma_distanza, passo, n, l, sigma_l, zero, sigma_zero):
+
+    if n == 0:
+        return 0
+    else:
+        # Calcolo della derivata parziale rispetto a distanza
+        partial_distanza = passo * (1 / (1 + (zero / distanza)**2) * (zero / distanza**2) - 1 / (1 + (l / distanza)**2) * (l / distanza**2)) / n
+
+        # Calcolo della derivata parziale rispetto a l
+        partial_l = passo * (-np.cos(np.arctan(l / distanza)) * (1 / (1 + (l / distanza)**2)) * (1 / distanza)) / n
+
+        # Calcolo della derivata parziale rispetto a zero
+        partial_zero = passo * (np.cos(np.arctan(zero / distanza)) * (1 / (1 + (zero / distanza)**2)) * (1 / distanza)) / n
+
+        # Calcolo dell'errore quadratico medio
+        sigma_lam = np.sqrt((partial_distanza * sigma_distanza)**2 + (partial_l * sigma_l)**2 + (partial_zero * sigma_zero)**2)
+        return sigma_lam
 
 
 if __name__ == "__main__":
@@ -32,7 +59,8 @@ if __name__ == "__main__":
 
     misure_distanza = np.array([97.4, 97.5, 97.4, 97.5, 97.3, 97.4])
     distanza = np.mean(misure_distanza)
-    sigma_distanza = np.std(misure_distanza, ddof=1)
+    sigma_distanza = np.std(misure_distanza, ddof=1) / np.sqrt(len(misure_distanza))
+    print(f"Distanza media tra righello e schermo: {distanza:.4f} cm ± {sigma_distanza:.4f} cm")
 
     # distanze tra P0 e i massimi:
     distanza_primo_max = np.mean([6.0, 8.2]) * 1e-2 # -1
@@ -40,11 +68,23 @@ if __name__ == "__main__":
     distanza_terzo_max = np.mean([11.9, 13.0]) * 1e-2 # 1
     distanza_quarto_max = np.mean([13.5, 14.5]) * 1e-2 # 2
     distanza_quinto_max = np.mean([14.9, 15.8]) * 1e-2 # 3
-    print (distanza_primo_max, distanza_secondo_max, distanza_terzo_max, distanza_quarto_max, distanza_quinto_max)
+
+    # sigma delle distanze tra P0 e i massimi (devono essere in metri per essere coerenti con le altre unità)
+    sigma_distanza_primo_max = np.std([6.0, 8.2], ddof=1) * 1e-2 / np.sqrt(2)
+    sigma_distanza_secondo_max = np.std([9.9, 11.1], ddof=1) * 1e-2 / np.sqrt(2)
+    sigma_distanza_terzo_max = np.std([11.9, 13.0], ddof=1) * 1e-2 / np.sqrt(2)
+    sigma_distanza_quarto_max = np.std([13.5, 14.5], ddof=1) * 1e-2 / np.sqrt(2)
+    sigma_distanza_quinto_max = np.std([14.9, 15.8], ddof=1) * 1e-2 / np.sqrt(2)
+    print(f"Distanza primo massimo: {distanza_primo_max:.4f} m ± {sigma_distanza_primo_max:.4f} m")
+    print(f"Distanza secondo massimo: {distanza_secondo_max:.4f} m ± {sigma_distanza_secondo_max:.4f} m")
+    print(f"Distanza terzo massimo: {distanza_terzo_max:.4f} m ± {sigma_distanza_terzo_max:.4f} m")
+    print(f"Distanza quarto massimo: {distanza_quarto_max:.4f} m ± {sigma_distanza_quarto_max:.4f} m")
+    print(f"Distanza quinto massimo: {distanza_quinto_max:.4f} m ± {sigma_distanza_quinto_max:.4f} m")
 
     # calcolo dello 0
     zero = distanza_secondo_max / 2
-    print(f"Zero: {zero:.4f} m")
+    sigma_zero = sigma_distanza_secondo_max / 2
+    print(f"Zero: {zero:.4f} m ± {sigma_zero:.4f} m")
 
     l = [distanza_primo_max - zero,
          distanza_secondo_max - zero,
@@ -52,9 +92,35 @@ if __name__ == "__main__":
          distanza_quarto_max - zero,
          distanza_quinto_max - zero]
     
+    sigma_l = [sigma_distanza_primo_max + sigma_zero,
+               sigma_distanza_secondo_max + sigma_zero,
+               sigma_distanza_terzo_max + sigma_zero,
+               sigma_distanza_quarto_max + sigma_zero,
+               sigma_distanza_quinto_max + sigma_zero]
+    
     n = [-1, 0, 1, 2, 3]
 
     lambda_vals = [lamb(distanza, d, n[i], l[i], zero) for i in range(len(n))]
-    lambda_errors = [sigma_lambda(distanza, d, n[i], l[i], 0.001, zero, 0.001, sigma_distanza) for i in range(len(n))]
+    lambda_errors = [sigma_lambda(distanza, d, n[i], l[i], sigma_l[i], zero, sigma_zero, sigma_distanza) for i in range(len(n))]
+    lambda_vals[1] = 6.37e-11
+    lambda_errors[1] = 1e-8
+    print ("\nCalcolo lambda:\n")
     for i in range(len(n)):
         print(f"Lambda for n={n[i]}: {lambda_vals[i]:.6e} m ± {lambda_errors[i]:.6e} m")
+
+    lambda_mean = np.average (lambda_vals, weights = [1/s for s in lambda_errors])
+    lambda_sigma = np.sqrt (1 / np.sum ([(1/s**2) for s in lambda_errors]))
+    print ("\nValori di lambda medio:")
+    print (f"{lambda_mean:.6e} ± {lambda_sigma:.6e}")
+
+    lambda_2_vals = [lambda_2(distanza, d, n[i], l[i], zero) for i in range(len(n))]
+    lambda_2_errors = [sigma_lambda_2(distanza, sigma_distanza, d, n[i], l[i], 0.001, zero, 0.001) for i in range(len(n))]
+    print ("\nCalcolo con lambda 2:\n")
+    for i in range(len(n)):
+        print(f"Lambda_2 for n={n[i]}: {lambda_2_vals[i]:.6e} m ± {lambda_2_errors[i]:.6e} m")
+
+    # identici (menomale) con lambda 1 e 2 (DOVEVO CONTROLLARE CHE FOSSE UGUALE LA DISTANZA OTTICA, sorry)
+
+    # COMMENTINO: nella prima "tranche" di lambda ho usato gli errori corretti,
+    #             nella seconda "tranche" invece ho usato per zero e distanze dallo zero la sensibilità dello strumento...
+    # vengono orridi in ogni caso, ma nel secondo (ovviemente) un filo meno... riponiamo le nostre speranze nel fit teorico I GUESS...
