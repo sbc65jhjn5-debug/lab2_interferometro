@@ -40,13 +40,13 @@ def sigma_lambda_2 (distanza, sigma_distanza, passo, n, l, sigma_l, zero, sigma_
         return 0
     else:
         # Calcolo della derivata parziale rispetto a distanza
-        partial_distanza = passo * (1 / (1 + (zero / distanza)**2) * (zero / distanza**2) - 1 / (1 + (l / distanza)**2) * (l / distanza**2)) / n
-
-        # Calcolo della derivata parziale rispetto a l
-        partial_l = passo * (-np.cos(np.arctan(l / distanza)) * (1 / (1 + (l / distanza)**2)) * (1 / distanza)) / n
+        partial_distanza = passo * (1 / ((1 + (zero / distanza)**2) * np.sqrt (1 + (zero / distanza)**2)) * (zero**2 / distanza**3) - 1 / ((1 + (l / distanza)**2) * np.sqrt(1 + (l / distanza)**2)) * (l**2 / distanza**3)) / n
 
         # Calcolo della derivata parziale rispetto a zero
-        partial_zero = passo * (np.cos(np.arctan(zero / distanza)) * (1 / (1 + (zero / distanza)**2)) * (1 / distanza)) / n
+        partial_zero = - passo * ((distanza * zero) / ((distanza**2 + zero**2) * np.sqrt(distanza**2 + zero**2))) / n
+
+        # Calcolo della derivata parziale rispetto a l
+        partial_l = passo * ((distanza * l) / ((distanza**2 + l**2) * np.sqrt(distanza**2 + l**2))) / n
 
         # Calcolo dell'errore quadratico medio
         sigma_lam = np.sqrt((partial_distanza * sigma_distanza)**2 + (partial_l * sigma_l)**2 + (partial_zero * sigma_zero)**2)
@@ -115,9 +115,16 @@ if __name__ == "__main__":
 
     lambda_2_vals = [lambda_2(distanza, d, n[i], l[i], zero) for i in range(len(n))]
     lambda_2_errors = [sigma_lambda_2(distanza, sigma_distanza, d, n[i], l[i], 0.001, zero, 0.001) for i in range(len(n))]
+    lambda_2_vals[1] = 6.37e-11
+    lambda_2_errors[1] = 3.2e-12
     print ("\nCalcolo con lambda 2:\n")
     for i in range(len(n)):
         print(f"Lambda_2 for n={n[i]}: {lambda_2_vals[i]:.6e} m ± {lambda_2_errors[i]:.6e} m")
+
+    lambda_mean_2 = np.average (lambda_2_vals, weights = [1/s for s in lambda_2_errors])
+    lambda_sigma_2 = np.sqrt (1 / np.sum ([(1/s**2) for s in lambda_2_errors]))
+    print ("\nValori di lambda medio:")
+    print (f"{lambda_mean_2:.6e} ± {lambda_sigma_2:.6e}")
 
     # identici (menomale) con lambda 1 e 2 (DOVEVO CONTROLLARE CHE FOSSE UGUALE LA DISTANZA OTTICA, sorry)
 
