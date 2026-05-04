@@ -53,7 +53,7 @@ if __name__ == "__main__":
                  label='Dati con errori'
                  )
     
-    ax.set_xlabel('Numero progressivo della frangia $p$')
+    ax.set_xlabel('Numero progressivo della frangia $N$')
     ax.set_ylabel('$\\cos (\\theta)$')
     ax.set_title('Interferenza di Fabry-Perot')
 
