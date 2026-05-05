@@ -96,5 +96,6 @@ if __name__ == "__main__":
 
     print (f"d = {d_fit * 1e3:.5f} ± {m.errors['d'] * 1e3:.5f} mm")
 
-    ax.legend()
+    plt.grid (True)
+    plt.legend()
     plt.show()
