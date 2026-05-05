@@ -119,7 +119,7 @@ if __name__ == "__main__":
     print (f"{lambda_mean:.6e} ± {lambda_sigma:.6e}")
 
     lambda_2_vals = [lambda_2(distanza, d, n[i], l[i], zero) for i in range(len(n))]
-    lambda_2_errors = [sigma_lambda_2(distanza, sigma_distanza, d, n[i], l[i], 0.001, zero, 0.001) for i in range(len(n))]
+    lambda_2_errors = [sigma_lambda_2(distanza, sigma_distanza, d, n[i], l[i], 0.002, zero, 0.001) for i in range(len(n))]
     lambda_2_vals[1] = 6.37e-11
     lambda_2_errors[1] = 3.2e-12
     print ("\nCalcolo con lambda 2:\n")
