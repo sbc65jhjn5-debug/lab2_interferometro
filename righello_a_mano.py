@@ -99,6 +99,11 @@ if __name__ == "__main__":
                sigma_distanza_quinto_max + sigma_zero]
     
     n = [-1, 0, 1, 2, 3]
+    
+    print ("\nDistanze P_N - zero\n")
+    for n_val, l_val, s_l in zip (n, l, sigma_l):
+        print (f"P_{n_val} - zero = {l_val * 10**2} ± {s_l * 10**2} cm")
+    
 
     lambda_vals = [lamb(distanza, d, n[i], l[i], zero) for i in range(len(n))]
     lambda_errors = [sigma_lambda(distanza, d, n[i], l[i], sigma_l[i], zero, sigma_zero, sigma_distanza) for i in range(len(n))]
