@@ -107,7 +107,7 @@ if __name__ == "__main__":
     
     results2 = []
     for N_prova in [2, 3, 4, 5, 6]:
-        m1 = Minuit(ls_step2, I_0=50000, N=N_prova, a=0.00013, B=0, c=0, m=1)
+        m1 = Minuit(ls_step2, I_0=50000, N=N_prova, a=0.00018, B=0, c=0, m=1)
         m1.fixed["N"] = True
         m1.migrad()
         results2.append((N_prova, m1.fval))  # fval = valore minimo del chi²
@@ -158,6 +158,62 @@ if __name__ == "__main__":
     
     ax.plot (y_scala,
              I_teorica (y_scala, I_0_fit, N_fit, a_fit, B_fit, c_fit, m_fit),
+             marker = '',
+             color = 'red',
+             label="Fit teorico")
+    
+    # quadrato per mask
+    ax.fill_between (y_scala, 0, 57000, where=mask, color='mistyrose', alpha=0.6, label="Dati usati per il fit")
+    
+    plt.legend (loc="lower right")
+    plt.grid (True)
+    plt.show ()
+
+    # Step 3: ripetiamo il procedimento per migliorare la stima
+
+    m_step3 = Minuit (ls_step2,
+                      I_0 = I_0_fit,
+                      N = N_migliore2,
+                      a = a_fit,
+                      B = B_fit,
+                      c = c_fit,
+                      m = m_fit
+                      )
+    
+    m_step3.fixed["N"] = True
+    m_step3.limits["a"] = (0.0001, 0.0002) # a deve essere positivo
+    m_step3.limits["B"] = (1.1e4, None) # B deve essere positivo, e superiore a 1.3 * 10^4
+
+    m_step3.migrad ()
+
+
+    I_0_fit3, N_fit3, a_fit3, B_fit3, c_fit3, m_fit3 = m_step3.values["I_0"], m_step3.values["N"], m_step3.values["a"], m_step3.values["B"], m_step3.values["c"], m_step3.values["m"]
+    for par, val, err in zip (m_step3.parameters, m_step2.values, m_step2.errors):
+        print(f"{par}: {val:.6e} ± {err:.6e}")
+    
+    fig, ax = plt.subplots()
+
+    ax.set_title ("Intensità in funzione della posizione sullo schermo")
+    ax.set_xlabel ("Posizione (m)")
+    ax.set_ylabel ("Intensità (a.u.)")
+
+    ax.plot (y_scala, 
+             int_data, 
+             marker = '',
+             color = 'blue',
+             linewidth = 1, 
+             label="Dati sperimentali")
+    
+
+    # banda di errore dei dati sperimentali
+    ax.fill_between(y_scala,
+                    int_data - sigma_tot,
+                    int_data + sigma_tot,
+                    color='lightblue', alpha=0.7, label="Errore totale (Poisson + posizione)")
+    
+    
+    ax.plot (y_scala,
+             I_teorica (y_scala, I_0_fit3, N_fit3, a_fit3, B_fit3, c_fit3, m_fit3),
              marker = '',
              color = 'red',
              label="Fit teorico")
